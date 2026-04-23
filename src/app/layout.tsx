@@ -6,6 +6,7 @@ import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Fustat, Geist_Mono } from "next/font/google";
+import Script from "next/script"; // Importado para os dados estruturados
 //@ts-ignore
 import "./globals.css";
 
@@ -47,7 +48,6 @@ export const metadata: Metadata = {
   twitter: {
     title: `${DATA.name}`,
     card: "summary_large_image",
-
     images: ["/og.jpg"],
   },
 };
@@ -57,6 +57,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Objeto Schema.org baseado nos seus dados
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: DATA.name,
+    url: "https://pablonovaes-me.vercel.app/",
+    jobTitle: "Desenvolvedor Frontend",
+    description: DATA.description,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "São Paulo",
+      addressCountry: "BR",
+    },
+    sameAs: [DATA.contact.social.LinkedIn.url, DATA.contact.social.GitHub.url],
+    knowsAbout: DATA.skills.map((skill) => skill.name),
+  };
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
@@ -65,6 +82,13 @@ export default function RootLayout({
           fustat.variable,
           geistMono.variable,
         )}>
+        {/* Injeção de Dados Estruturados para o Google Search */}
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+
         <ThemeProvider attribute="class" defaultTheme="dark">
           <TooltipProvider delayDuration={0}>
             <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
