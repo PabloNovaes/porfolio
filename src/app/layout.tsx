@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pablonovaes-me.vercel.app"),
+  metadataBase: new URL("https://opablodev.vercel.app/"),
   title: {
     default: `${DATA.name} | Frontend Developer`,
     template: `%s | ${DATA.name}`,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${DATA.name}`,
     description: DATA.description,
-    url: "https://pablonovaes-me.vercel.app",
+    url: "https://opablodev.vercel.app/",
     siteName: `${DATA.name}`,
     locale: "en_US",
     type: "website",
