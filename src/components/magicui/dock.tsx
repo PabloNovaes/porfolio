@@ -1,7 +1,14 @@
 "use client";
 
+import { useMediaQuery } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
-import { motion, type MotionValue, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import { createContext, useContext, useRef, type ReactNode } from "react";
 
 interface DockProps {
@@ -31,16 +38,24 @@ interface DockContextValue {
 
 const DockContext = createContext<DockContextValue | null>(null);
 
-const Dock = ({ className, children, magnification = DEFAULT_MAGNIFICATION, distance = DEFAULT_DISTANCE }: DockProps) => {
+const Dock = ({
+  className,
+  children,
+  magnification = DEFAULT_MAGNIFICATION,
+  distance = DEFAULT_DISTANCE,
+}: DockProps) => {
   const mouseX = useMotionValue(Infinity);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <DockContext.Provider value={{ mouseX, magnification, distance }}>
       <motion.div
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        className={cn("mx-auto w-max h-full flex items-end justify-center overflow-visible rounded-full border", className)}
-      >
+        onMouseMove={(e) => !isMobile && mouseX.set(e.pageX)}
+        onMouseLeave={() => !isMobile && mouseX.set(Infinity)}
+        className={cn(
+          "mx-auto w-max h-full flex items-end justify-center overflow-visible rounded-full border",
+          className,
+        )}>
         {children}
       </motion.div>
     </DockContext.Provider>
@@ -63,24 +78,33 @@ const DockIcon = ({ className, children }: DockIconProps) => {
   });
 
   const containerSize = useSpring(
-    useTransform(distanceCalc, [-distance, 0, distance], [BASE_SIZE, magnification, BASE_SIZE]),
-    SPRING
+    useTransform(
+      distanceCalc,
+      [-distance, 0, distance],
+      [BASE_SIZE, magnification, BASE_SIZE],
+    ),
+    SPRING,
   );
   const iconSize = useSpring(
-    useTransform(distanceCalc, [-distance, 0, distance], [BASE_ICON_SIZE, magnification * ICON_SIZE_RATIO, BASE_ICON_SIZE]),
-    SPRING
+    useTransform(
+      distanceCalc,
+      [-distance, 0, distance],
+      [BASE_ICON_SIZE, magnification * ICON_SIZE_RATIO, BASE_ICON_SIZE],
+    ),
+    SPRING,
   );
 
   return (
     <motion.div
       ref={ref}
       style={{ width: containerSize, height: containerSize }}
-      className={cn("relative flex aspect-square items-center justify-center rounded-full shrink-0", className)}
-    >
+      className={cn(
+        "relative flex aspect-square items-center justify-center rounded-full shrink-0",
+        className,
+      )}>
       <motion.div
         style={{ width: iconSize, height: iconSize }}
-        className="flex items-center justify-center"
-      >
+        className="flex items-center justify-center">
         {children}
       </motion.div>
     </motion.div>
@@ -88,4 +112,5 @@ const DockIcon = ({ className, children }: DockIconProps) => {
 };
 
 export { Dock, DockIcon };
-export type { DockProps, DockIconProps };
+export type { DockIconProps, DockProps };
+
