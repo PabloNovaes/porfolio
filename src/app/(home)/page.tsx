@@ -1,64 +1,89 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
-import ContactSection from "@/components/section/contact-section";
+import { ParallaxSection } from "@/components/parallax-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
 import SpotifyCard from "@/components/spotify";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
+import Lenis from "lenis";
 import { ArrowUpRight } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
+import { useEffect } from "react";
 import Markdown from "react-markdown";
 
-const BLUR_FADE_DELAY = 0.04;
+export const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
+  useEffect(() => {
+    const lenis = new Lenis();
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <main className="min-h-dvh flex flex-col gap-14 relative">
       <section id="hero">
-        <div className="w-full space-y-8">
-          <div className="gap-2 gap-y-6 flex flex-col md:flex-row justify-between">
-            <div className="gap-2 flex flex-col order-2 md:order-1">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
-                className="text-3xl font-semibold tracking-tighter sm:text-4xl lg:text-5xl"
-                yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]}`}
-              />
-              <BlurFadeText
-                className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl"
-                delay={BLUR_FADE_DELAY}
-                text={DATA.description}
-              />
-              <BlurFade delay={BLUR_FADE_DELAY * 2}>
-                <SpotifyCard />
+        <ParallaxSection offset={50}>
+          <div className="w-full space-y-8">
+            <div className="gap-2 gap-y-6 flex flex-col md:flex-row justify-between">
+              <div className="gap-2 flex flex-col order-2 md:order-1">
+                <BlurFadeText
+                  delay={BLUR_FADE_DELAY}
+                  className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60"
+                  yOffset={10}
+                  text={`Hi, I'm ${DATA.name.split(" ")[0]} ッ`}
+                />
+                <BlurFadeText
+                  className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl"
+                  delay={BLUR_FADE_DELAY}
+                  text={DATA.description}
+                />
+                <BlurFade delay={BLUR_FADE_DELAY * 2}>
+                  <SpotifyCard />
+                </BlurFade>
+              </div>
+              <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
+                <motion.div
+                  className="relative w-fit h-fit"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}>
+                  {/* Avatar com tamanhos responsivos */}
+                  <Avatar className="size-24 md:size-32 border rounded-full shadow-lg ring-3 ring-muted">
+                    <AvatarImage
+                      className="object-cover"
+                      alt={DATA.name}
+                      src={DATA.avatarUrl}
+                    />
+                    <AvatarFallback>{DATA.initials}</AvatarFallback>
+                  </Avatar>
+
+                  {/* Indicador Online - Ajustado para mobile e desktop */}
+                  <div className="absolute  bottom-1 right-1 md:bottom-2 md:right-2 z-50 bg-muted p-1 rounded-full border border-muted shadow-sm">
+                    <span className="relative flex h-2.5 w-2.5 md:h-3 md:w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 md:h-3 md:w-3 bg-teal-500"></span>
+                    </span>
+                  </div>
+                </motion.div>
               </BlurFade>
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
-              <div className="relative w-fit h-fit">
-                {/* Avatar com tamanhos responsivos */}
-                <Avatar className="size-24 md:size-32 border rounded-full shadow-lg ring-3 ring-muted">
-                  <AvatarImage
-                    className="object-cover"
-                    alt={DATA.name}
-                    src={DATA.avatarUrl}
-                  />
-                  <AvatarFallback>{DATA.initials}</AvatarFallback>
-                </Avatar>
-
-                {/* Indicador Online - Ajustado para mobile e desktop */}
-                <div className="absolute  bottom-1 right-1 md:bottom-2 md:right-2 z-50 bg-muted p-1 rounded-full border border-muted shadow-sm">
-                  <span className="relative flex h-2.5 w-2.5 md:h-3 md:w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 md:h-3 md:w-3 bg-teal-500"></span>
-                  </span>
-                </div>
-              </div>
-            </BlurFade>
           </div>
-        </div>
+        </ParallaxSection>
       </section>
       <section id="about">
         <div className="flex min-h-0 flex-col gap-y-4">
@@ -147,7 +172,7 @@ export default function Page() {
                       className={cn(
                         "h-10 w-20 absolute -left-7 opacity-55 blur-md rounded overflow-hidden object-contain",
                         //@ts-ignore
-                        skill?.invert && "invert",
+                        skill?.invert && "dark:invert",
                       )}
                     />
                   )}
@@ -156,7 +181,7 @@ export default function Page() {
                       className={cn(
                         "size-4 rounded z-10 overflow-hidden object-contain",
                         //@ts-ignore
-                        skill?.invert && "invert",
+                        skill?.invert && "dark:invert",
                       )}
                     />
                   )}
@@ -172,16 +197,6 @@ export default function Page() {
       <section id="projects">
         <BlurFade delay={BLUR_FADE_DELAY * 11}>
           <ProjectsSection />
-        </BlurFade>
-      </section>
-      {/* <section id="hackathons">
-        <BlurFade delay={BLUR_FADE_DELAY * 13}>
-          <HackathonsSection />
-        </BlurFade>
-      </section> */}
-      <section id="contact">
-        <BlurFade delay={BLUR_FADE_DELAY * 21}>
-          <ContactSection />
         </BlurFade>
       </section>
     </main>
