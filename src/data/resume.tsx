@@ -144,7 +144,7 @@ Entrei no projeto na reta final, um pouco antes do lançamento oficial, para gar
           icon: <Icons.playstore className="size-3" />,
         },
       ],
-      image: "./covers/steals.png",
+      image: "/covers/steals.png",
       video: "",
     },
     {
@@ -178,7 +178,7 @@ Atuei na evolução do produto em produção, focando em melhorias de engajament
           icon: <Icons.playstore className="size-3" />,
         },
       ],
-      image: "./covers/nk-store.png",
+      image: "/covers/nk-store.png",
       video: "",
     },
     {
@@ -204,7 +204,7 @@ Atuei em todo o ciclo de desenvolvimento do produto, sendo responsável pela arq
           icon: <Icons.playstore className="size-3" />,
         },
       ],
-      image: "./covers/grupo-sinal.png",
+      image: "/covers/grupo-sinal.png",
       video: "",
     },
     {
@@ -232,7 +232,7 @@ Atuei no desenvolvimento do app do zero, onde fiquei responsável por parte da e
           icon: <Icons.playstore className="size-3" />,
         },
       ],
-      image: "./covers/cellar.png",
+      image: "/covers/cellar.png",
       video: "",
     },
     {
@@ -261,7 +261,7 @@ Fui responsável por adaptar o app ao novo design proposto, implementando a reno
           icon: <Icons.playstore className="size-3" />,
         },
       ],
-      image: "./covers/dominio-social.png",
+      image: "/covers/dominio-social.png",
       video: "",
     },
     {

@@ -346,4 +346,8 @@
       0px 25px 25px -3.75px rgba(0, 0, 0, 0.1),
       0px 0px 0px 1px #545454;
   }
+
+  .projects-container:has(.card:hover) .card:not(:hover) {
+    @apply opacity-70! saturate-0!;
+  }
 }

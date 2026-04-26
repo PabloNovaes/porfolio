@@ -1,19 +1,23 @@
-"use client";
-
 import BlurFade from "@/components/magicui/blur-fade";
 import { MemberList } from "@/components/members-list";
 import { DATA } from "@/data/resume";
-import { cleanString } from "@/lib/clear-string";
-import { ChevronLeft, ExternalLink } from "lucide-react";
+import { cleanMdDescription, cleanString } from "@/lib/clear-string";
+import { mdxComponents } from "@/mdx-components";
+import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
-import { useEffect, ViewTransition } from "react";
+import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import Markdown from "react-markdown";
 
 const BLUR_FADE_DELAY = 0.04;
 
-export default function ProjectPage() {
-  const { project: projectSlug } = useParams();
+export default async function ProjectPage({
+  params,
+}: {
+  params: { project: string };
+}) {
+  const { project: projectSlug } = await params;
 
   const project: Project | undefined = DATA.projects.find((p) => {
     const slug = cleanString(p.title);
@@ -23,10 +27,6 @@ export default function ProjectPage() {
   if (!project) {
     notFound();
   }
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const githubLink = project.links?.find(
     (link) =>
@@ -45,7 +45,7 @@ export default function ProjectPage() {
   const hasNext = !!nextProject;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6">
+    <div className="max-w-5xl mx-auto">
       <BlurFade delay={BLUR_FADE_DELAY}>
         <Link
           href={`/#${cleanString(project.title)}`}
@@ -57,7 +57,7 @@ export default function ProjectPage() {
 
       <header className="mb-6">
         <BlurFade delay={BLUR_FADE_DELAY * 2} className="grid gap-4">
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
             {project.title}
           </h1>
 
@@ -103,10 +103,11 @@ export default function ProjectPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <img
-                src={
-                  (project as unknown as Project).image || "/placeholder.jpg"
-                }
+              <Image
+                src={project.image!}
+                placeholder="blur"
+                fill
+                blurDataURL={project.image}
                 alt={(project as unknown as Project).title}
                 className="w-full h-full object-cover"
               />
@@ -125,7 +126,9 @@ export default function ProjectPage() {
         <div className="md:col-span-2 space-y-8">
           <BlurFade delay={BLUR_FADE_DELAY * 4}>
             <section className="prose dark:prose-invert max-w-none prose-p:text-muted-foreground prose-headings:text-foreground">
-              <Markdown>{project.description}</Markdown>
+              <Markdown components={mdxComponents}>
+                {project.description}
+              </Markdown>
             </section>
           </BlurFade>
         </div>
@@ -188,13 +191,19 @@ export default function ProjectPage() {
 
       {/* NAVEGAÇÃO */}
       <BlurFade delay={BLUR_FADE_DELAY * 7}>
-        <div className="w-full border-t border-border mt-10 pt-6 grid grid-cols-2 gap-4">
+        <div className="w-full border-t border-border max-sm:mt-16 mt-10 max-sm:pt-12 pt-6 grid grid-cols-2 gap-4">
           {/* Link Anterior */}
           {hasPrevious ? (
             <Link
               className="flex flex-col gap-1 group min-w-0"
               href={`/${cleanString(previousProject?.title ?? "")}`}>
-              <span className="text-sm text-muted-foreground">Anterior</span>
+              <span className="text-sm text-muted-foreground flex items-center justify-start gap-1">
+                <ChevronLeft
+                  size={14}
+                  className="group-hover:-translate-x-1 transition-all"
+                />
+                Anterior
+              </span>
               <span className="text-sm font-medium text-foreground group-hover:underline truncate">
                 {previousProject?.title}
               </span>
@@ -208,7 +217,13 @@ export default function ProjectPage() {
             <Link
               className="flex flex-col gap-1 text-right group min-w-0"
               href={`/${cleanString(nextProject?.title ?? "")}`}>
-              <span className="text-sm text-muted-foreground">Próximo</span>
+              <span className="text-sm text-muted-foreground flex items-center gap-1 justify-end">
+                Próximo{" "}
+                <ChevronRight
+                  size={14}
+                  className="group-hover:translate-x-1 transition-all"
+                />
+              </span>
               <span className="text-sm font-medium text-foreground group-hover:underline truncate">
                 {nextProject?.title}
               </span>
@@ -218,4 +233,77 @@ export default function ProjectPage() {
       </BlurFade>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  return DATA.projects.map((project) => ({
+    project: cleanString(project.title),
+  }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { project: string };
+}) {
+  const { project } = await params;
+
+  const projectName = project.replace("/", "");
+  const capitalizedProject =
+    projectName.charAt(0).toUpperCase() + projectName.slice(1);
+
+  const baseUrl = "https://pablonovaes-me.vercel.app";
+  const url = `${baseUrl}/${projectName}`;
+
+  const projectData = DATA.projects.find((p) => {
+    const slug = cleanString(p.title);
+
+    return slug === projectName;
+  });
+
+  return {
+    title: `${projectData?.client} | ${projectData?.title}`,
+    description: cleanMdDescription(projectData?.description as string),
+
+    alternates: {
+      canonical: url,
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+
+    openGraph: {
+      title: `${projectData?.client} | ${projectData?.title}`,
+      description: cleanMdDescription(projectData?.description as string),
+      url: url,
+      siteName: "Pablo Novaes | Full Stack Developer",
+      locale: "pt_BR",
+      type: "website",
+
+      images: [
+        {
+          url: `${baseUrl}/covers/${projectName}.png`,
+          width: 1200,
+          height: 630,
+          alt: `Screenshot do projeto ${capitalizedProject}`,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: `${capitalizedProject} | Pablo Novaes`,
+      description: `Análise técnica do projeto ${capitalizedProject}.`,
+      images: [`${baseUrl}/covers/${projectName}.png`],
+    },
+  };
 }

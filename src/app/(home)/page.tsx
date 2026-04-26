@@ -167,7 +167,7 @@ export default function Page() {
                 key={skill.name}
                 delay={BLUR_FADE_DELAY * 10 + id * 0.05}>
                 <div className="border overflow-hidden relative bg-muted/30 border-border ring-border/20 rounded-xl h-8 w-fit pl-2 px-4 flex items-center gap-2">
-                  {skill.icon && (
+                  {/* {skill.icon && (
                     <skill.icon
                       className={cn(
                         "h-10 w-20 absolute -left-7 opacity-55 blur-md rounded overflow-hidden object-contain",
@@ -175,7 +175,7 @@ export default function Page() {
                         skill?.invert && "dark:invert",
                       )}
                     />
-                  )}
+                  )} */}
                   {skill.icon && (
                     <skill.icon
                       className={cn(
@@ -195,9 +195,9 @@ export default function Page() {
         </div>
       </section>
       <section id="projects">
-        <BlurFade delay={BLUR_FADE_DELAY * 11}>
-          <ProjectsSection />
-        </BlurFade>
+        {/* <BlurFade delay={BLUR_FADE_DELAY * 11}> */}
+        <ProjectsSection />
+        {/* </BlurFade> */}
       </section>
     </main>
   );
