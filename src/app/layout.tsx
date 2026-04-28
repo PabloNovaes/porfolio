@@ -27,7 +27,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pablonovaes-me.vercel.app/"),
+  metadataBase: new URL("https://pablonovaes-me.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   title: {
     default: `${DATA.name} | Frontend Developer`,
     template: `%s | ${DATA.name}`,
@@ -56,29 +70,30 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: DATA.name,
+  url: "https://pablonovaes-me.vercel.app/",
+  jobTitle: "Frontend Developer",
+  description: DATA.description,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "São Paulo",
+    addressCountry: "BR",
+  },
+  sameAs: [
+    DATA.contact.social.LinkedIn.url,
+    DATA.contact.social.GitHub.url,
+  ].filter(Boolean),
+  knowsAbout: DATA.skills.map((skill) => skill.name),
+};
+
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: any;
 }>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: DATA.name,
-    url: "https://pablonovaes-me.vercel.app/",
-    jobTitle: "Desenvolvedor Frontend",
-    description: DATA.description,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "São Paulo",
-      addressCountry: "BR",
-    },
-    sameAs: [DATA.contact.social.LinkedIn.url, DATA.contact.social.GitHub.url],
-    knowsAbout: DATA.skills.map((skill) => skill.name),
-  };
-
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
